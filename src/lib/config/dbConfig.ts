@@ -1,12 +1,15 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI!;
 
 if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable');
+  throw new Error("Please define the MONGODB_URI environment variable");
 }
 
-let cached: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null } = {
+let cached: {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+} = {
   conn: null,
   promise: null,
 };
@@ -28,7 +31,7 @@ async function connectDB() {
 
   try {
     cached.conn = await cached.promise;
-    console.log('Connected to MongoDB');
+    console.log("Connected to MongoDB");
     return cached.conn;
   } catch (e) {
     cached.promise = null;

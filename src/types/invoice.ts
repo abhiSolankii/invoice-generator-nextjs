@@ -4,11 +4,12 @@ export interface InvoiceItem {
   quantity: number;
   rate: number;
   amount: number;
-  taxAmount?: number;
-  taxPercentage?: number;
+  taxPercentage: number;
 }
 
-export interface InvoiceData {
+export interface Invoice {
+  _id: string;
+  userId: string;
   logoUrl: string;
   invoiceNumber: string;
   from: string;
@@ -19,10 +20,8 @@ export interface InvoiceData {
   dueDate: Date;
   poNumber: number;
   items: InvoiceItem[];
-  taxAmount?: number;
-  taxPercentage?: number;
-  discountAmount?: number;
-  discountPercentage?: number;
+  taxPercentage: number;
+  discountPercentage: number;
   shippingAmount: number;
   totalAmount: number;
   amountPaid: number;
