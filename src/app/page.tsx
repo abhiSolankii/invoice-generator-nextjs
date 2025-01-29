@@ -190,6 +190,7 @@ const page = () => {
     formData.amountPaid,
   ]);
   //Calculation ends
+
   const addItem = () => {
     setFormData((prev) => ({
       ...prev,
