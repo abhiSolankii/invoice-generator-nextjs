@@ -11,7 +11,7 @@ export async function GET(
   await connectDB();
 
   try {
-    const { id } = params;
+    const { id } = await params;
     const invoice = await Invoice.findById(id);
 
     if (!invoice) {
@@ -34,11 +34,13 @@ export async function PUT(
   await connectDB();
 
   try {
+    const id = await params.id;
     const formData = await request.formData();
     
     // Handle file upload
     let fileUrl;
-    const file = formData.get('image') as File;
+    
+    const file = formData.get('file') as File;
     if (file) {
       // Validate file type
       const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
@@ -124,7 +126,7 @@ export async function DELETE(
   await connectDB();
 
   try {
-    const { id } = params;
+    const id = await params.id;
     const deletedInvoice = await Invoice.findByIdAndDelete(id);
 
     if (!deletedInvoice) {

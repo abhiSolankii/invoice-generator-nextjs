@@ -8,7 +8,6 @@ if (!JWT_SECRET) {
 }
 
 export async function authMiddleware(request: NextRequest) {
-  console.log("Checking authorization...");
   const tokenCookie = request.cookies.get('token');
   const token = tokenCookie?.value;
 

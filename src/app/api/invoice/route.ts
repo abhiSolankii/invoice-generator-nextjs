@@ -44,13 +44,29 @@ export async function POST(request: NextRequest) {
       const nameKey = `items[${index}][name]`;
       if (!formData.has(nameKey)) break;
 
+      const name = formData.get(`items[${index}][name]`)?.toString().trim();
+      const description = formData.get(`items[${index}][description]`)?.toString().trim();
+      const quantity = Number(formData.get(`items[${index}][quantity]`));
+      const rate = Number(formData.get(`items[${index}][rate]`));
+      const amount = Number(formData.get(`items[${index}][amount]`));
+      const taxAmount = Number(formData.get(`items[${index}][taxAmount]`));
+      const taxPercentage = Number(formData.get(`items[${index}][taxPercentage]`));
+
+      if (!name || !description) {
+        return NextResponse.json(
+          { error: 'Item name and description are required' },
+          { status: 400 }
+        );
+      }
+
       items.push({
-        name: formData.get(`items[${index}][name}`),
-        description: formData.get(`items[${index}][description}`),
-        quantity: Number(formData.get(`items[${index}][quantity}`)),
-        rate: Number(formData.get(`items[${index}][rate}`)),
-        taxPercentage: Number(formData.get(`items[${index}][taxPercentage}`)),
-        amount: Number(formData.get(`items[${index}][amount}`)),
+        name,
+        description,
+        quantity,
+        rate,
+        amount,
+        taxAmount,
+        taxPercentage
       });
       
       index++;
@@ -71,7 +87,9 @@ export async function POST(request: NextRequest) {
       dueDate: formData.get('dueDate') ? new Date(formData.get('dueDate').toString().trim()) : undefined,
       poNumber: Number(formData.get('poNumber')),
       items,
+      taxAmount: Number(formData.get('taxAmount')),
       taxPercentage: Number(formData.get('taxPercentage')),
+      discountAmount: Number(formData.get('discountAmount')),
       discountPercentage: Number(formData.get('discountPercentage')),
       shippingAmount: Number(formData.get('shippingAmount')),
       totalAmount: Number(formData.get('totalAmount')),
