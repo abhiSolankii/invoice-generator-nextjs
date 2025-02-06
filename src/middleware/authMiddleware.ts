@@ -8,6 +8,7 @@ if (!JWT_SECRET) {
 }
 
 export async function authMiddleware(request: NextRequest) {
+  console.log("Checking authorization...");
   const tokenCookie = request.cookies.get('token');
   const token = tokenCookie?.value;
 
@@ -18,7 +19,7 @@ export async function authMiddleware(request: NextRequest) {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     (request as any).user = decoded; 
-    return NextResponse.next();
+    return null; // Return null to indicate no error
   } catch (error) {
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
   }

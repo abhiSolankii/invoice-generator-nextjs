@@ -10,6 +10,8 @@ const s3Client = new S3Client({
   }
 });
 
+console.log(process.env.AWS_REGION, process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY);
+
 // Helper function to get content type
 const getContentType = (originalFileName: string) => {
   const extension = originalFileName.split('.').pop()?.toLowerCase();

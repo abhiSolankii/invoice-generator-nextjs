@@ -65,22 +65,12 @@ const invoiceSchema = new Schema({
       type: Number,
       required: true,
     },
-    taxAmount: {
-      type: Number,
-      required: true,
-    },
     taxPercentage: {
       type: Number,
       required: true,
     },
   }],
-  taxAmount: {
-    type: Number,
-  },
   taxPercentage: {
-    type: Number,
-  },
-  discountAmount: {
     type: Number,
   },
   discountPercentage: {
