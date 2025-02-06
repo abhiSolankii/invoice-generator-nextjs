@@ -20,6 +20,7 @@ export interface Invoice {
   dueDate: Date;
   poNumber: number;
   items: InvoiceItem[];
+  subtotal?: number;
   taxPercentage: number;
   discountPercentage: number;
   shippingAmount: number;

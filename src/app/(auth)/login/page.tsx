@@ -1,32 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import useApiRequest from "@/hooks/useApiRequest";
+import Loader from "@/components/Loader";
 
 export default function LoginPage() {
+  const { apiRequest, loading } = useApiRequest();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { updateUser } = useAuth();
+  const { updateUser, updateToken } = useAuth();
   const router = useRouter();
+
+  // prevent logged in users from accessing this page
+  useLayoutEffect(() => {
+    if (localStorage.getItem("token") && localStorage.getItem("user")) {
+      router.push("/invoices");
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const data = await apiRequest<any>("POST", "/user/login", {
+        email,
+        password,
       });
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message);
-
       updateUser(data.user);
+      updateToken(data.token);
       router.push("/invoices");
-      toast.success("Logged in successfully");
+      toast.success(data.message || "Logged in successfully");
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -69,7 +75,7 @@ export default function LoginPage() {
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              Sign in
+              {loading ? <Loader /> : "Sign in"}
             </button>
           </div>
         </form>

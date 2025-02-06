@@ -1,12 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import useApiRequest from "@/hooks/useApiRequest";
+import { Loader } from "lucide-react";
 
 export default function SignupPage() {
+  const { apiRequest, loading } = useApiRequest();
+  // prevent logged in users from accessing this page
+  useLayoutEffect(() => {
+    if (localStorage.getItem("token") && localStorage.getItem("user")) {
+      router.push("/invoices");
+    }
+  }, []);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -24,20 +34,13 @@ export default function SignupPage() {
     }
 
     try {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message);
-
-      updateUser(data.user);
-      router.push("/invoices");
-      toast.success("Account created successfully!");
+      const data = await apiRequest<any>("POST", "/user/signup", formData);
+      toast.success(data.message || "Account created successfully!");
+      router.push("/login");
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(
+        error.response?.data?.message || error.message || "An error occurred"
+      );
     }
   };
 
@@ -106,7 +109,7 @@ export default function SignupPage() {
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              Sign up
+              {loading ? <Loader /> : "Sign up"}
             </button>
           </div>
         </form>
