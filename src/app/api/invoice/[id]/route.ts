@@ -79,32 +79,42 @@ export async function PUT(
 
     const userId = (request as any).user.userId;
 
-    const updatedInvoice = await Invoice.findByIdAndUpdate(
-      id,
-      {
-        userId,
-        logoUrl: fileUrl || formData.get('logoUrl')?.toString().trim(),
-        invoiceNumber: formData.get('invoiceNumber')?.toString().trim(),
-        from: formData.get('from')?.toString().trim(),
-        billTo: formData.get('billTo')?.toString().trim(),
-        shipTo: formData.get('shipTo')?.toString().trim(),
-        invoiceDate: formData.get('invoiceDate') ? new Date(formData.get('invoiceDate').toString().trim()) : undefined,
-        paymentTerms: formData.get('paymentTerms')?.toString().trim(),
-        dueDate: formData.get('dueDate') ? new Date(formData.get('dueDate').toString().trim()) : undefined,
-        poNumber: Number(formData.get('poNumber')),
-        items,
-        taxPercentage: Number(formData.get('taxPercentage')),
-        discountPercentage: Number(formData.get('discountPercentage')),
-        shippingAmount: Number(formData.get('shippingAmount')),
-        totalAmount: Number(formData.get('totalAmount')),
-        amountPaid: Number(formData.get('amountPaid')),
-        balanceDue: Number(formData.get('balanceDue')),
-        notes: formData.get('notes')?.toString().trim(),
-        terms: formData.get('terms')?.toString().trim(),
-        currency: formData.get('currency')?.toString().trim()
-      },
-      { new: true }
-    );
+    // Helper function to safely parse date
+    const parseDate = (dateString: FormDataEntryValue | null): Date | undefined => {
+      if (!dateString) return undefined;
+      const trimmedDate = dateString.toString().trim();
+      if (!trimmedDate) return undefined;
+      
+      const date = new Date(trimmedDate);
+      return isNaN(date.getTime()) ? undefined : date;
+    };
+
+const updatedInvoice = await Invoice.findByIdAndUpdate(
+  id,
+  {
+    userId,
+    logoUrl: fileUrl || formData.get('logoUrl')?.toString().trim(),
+    invoiceNumber: formData.get('invoiceNumber')?.toString().trim() ?? '',
+    from: formData.get('from')?.toString().trim() ?? '',
+    billTo: formData.get('billTo')?.toString().trim() ?? '',
+    shipTo: formData.get('shipTo')?.toString().trim() ?? '',
+    invoiceDate: parseDate(formData.get('invoiceDate')),
+    paymentTerms: formData.get('paymentTerms')?.toString().trim() ?? '',
+    dueDate: parseDate(formData.get('dueDate')),
+    poNumber: Number(formData.get('poNumber') ?? 0),
+    items,
+    taxPercentage: Number(formData.get('taxPercentage') ?? 0),
+    discountPercentage: Number(formData.get('discountPercentage') ?? 0),
+    shippingAmount: Number(formData.get('shippingAmount') ?? 0),
+    totalAmount: Number(formData.get('totalAmount') ?? 0),
+    amountPaid: Number(formData.get('amountPaid') ?? 0),
+    balanceDue: Number(formData.get('balanceDue') ?? 0),
+    notes: formData.get('notes')?.toString().trim() ?? '',
+    terms: formData.get('terms')?.toString().trim() ?? '',
+    currency: formData.get('currency')?.toString().trim() ?? ''
+  },
+  { new: true }
+);
 
     if (!updatedInvoice) {
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });

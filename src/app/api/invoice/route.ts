@@ -78,26 +78,32 @@ export async function POST(request: NextRequest) {
     const newInvoice = new Invoice({
       userId,
       logoUrl: fileUrl,
-      invoiceNumber: formData.get('invoiceNumber')?.toString().trim(),
-      from: formData.get('from')?.toString().trim(),
-      billTo: formData.get('billTo')?.toString().trim(),
-      shipTo: formData.get('shipTo')?.toString().trim(),
-      invoiceDate: formData.get('invoiceDate') ? new Date(formData.get('invoiceDate').toString().trim()) : undefined,
-      paymentTerms: formData.get('paymentTerms')?.toString().trim(),
-      dueDate: formData.get('dueDate') ? new Date(formData.get('dueDate').toString().trim()) : undefined,
-      poNumber: Number(formData.get('poNumber')),
+      invoiceNumber: formData.get('invoiceNumber')?.toString().trim() ?? '',
+      from: formData.get('from')?.toString().trim() ?? '',
+      billTo: formData.get('billTo')?.toString().trim() ?? '',
+      shipTo: formData.get('shipTo')?.toString().trim() ?? '',
+      invoiceDate: (() => {
+        const date = formData.get('invoiceDate');
+        return date ? new Date(date.toString().trim()) : undefined;
+      })(),
+      paymentTerms: formData.get('paymentTerms')?.toString().trim() ?? '',
+      dueDate: (() => {
+        const date = formData.get('dueDate');
+        return date ? new Date(date.toString().trim()) : undefined;
+      })(),
+      poNumber: Number(formData.get('poNumber') ?? 0),
       items,
-      taxAmount: Number(formData.get('taxAmount')),
-      taxPercentage: Number(formData.get('taxPercentage')),
-      discountAmount: Number(formData.get('discountAmount')),
-      discountPercentage: Number(formData.get('discountPercentage')),
-      shippingAmount: Number(formData.get('shippingAmount')),
-      totalAmount: Number(formData.get('totalAmount')),
-      amountPaid: Number(formData.get('amountPaid')),
-      balanceDue: Number(formData.get('balanceDue')),
-      notes: formData.get('notes')?.toString().trim(),
-      terms: formData.get('terms')?.toString().trim(),
-      currency: formData.get('currency')?.toString().trim()
+      taxAmount: Number(formData.get('taxAmount') ?? 0),
+      taxPercentage: Number(formData.get('taxPercentage') ?? 0),
+      discountAmount: Number(formData.get('discountAmount') ?? 0),
+      discountPercentage: Number(formData.get('discountPercentage') ?? 0),
+      shippingAmount: Number(formData.get('shippingAmount') ?? 0),
+      totalAmount: Number(formData.get('totalAmount') ?? 0),
+      amountPaid: Number(formData.get('amountPaid') ?? 0),
+      balanceDue: Number(formData.get('balanceDue') ?? 0),
+      notes: formData.get('notes')?.toString().trim() ?? '',
+      terms: formData.get('terms')?.toString().trim() ?? '',
+      currency: formData.get('currency')?.toString().trim() ?? ''
     });
 
     const savedInvoice = await newInvoice.save();
